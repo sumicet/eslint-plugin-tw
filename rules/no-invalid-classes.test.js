@@ -37,6 +37,88 @@ ruleTester.run("no-invalid-classes", noInvalidClasses, {
     {
       code: `<div class="-mx-px" />`,
     },
+
+    {
+      code: `<figure class="bg-sky-500 hover:bg-sky-700" />`,
+      name: "simple variant",
+    },
+    {
+      code: `<figure class="dark:md:hover:bg-fuchsia-600" />`,
+      name: "stacked variants",
+    },
+    {
+      code: `<div class="bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300" />`,
+      name: "multiple simple variants",
+    },
+    {
+      code: `<div class="[&:nth-child(3)]:underline" />`,
+      name: "arbitrary variant",
+    },
+    {
+      code: `<div class="text-slate-900 group-hover:text-white text-sm font-semibold" />`,
+      name: "arbitrary variant with predefined values eg group-* as in group-hover",
+    },
+    {
+      code: `<div class="has-[:checked]:bg-indigo-50" />`,
+      name: "arbitrary variant with arbitrary values eg has-[...]",
+    },
+    {
+      code: `<div class="lg:[&:nth-child(3)]:hover:underline" />`,
+      name: "stacked: variant + arbitrary variant + variant",
+    },
+    {
+      code: `<li class="group/item hover:bg-slate-100">
+      <img src="{person.imageUrl}" alt="" />
+      <div>
+        <a href="{person.url}">{person.name}</a>
+        <p>{person.title}</p>
+      </div>
+      <a class="group/edit invisible hover:bg-slate-200 group-hover/item:visible" href="tel:{person.phone}">
+        <span class="group-hover/edit:text-gray-700">Call</span>
+        <svg class="group-hover/edit:translate-x-0.5 group-hover/edit:text-slate-500" />
+      </a>
+    </li>`,
+      name: "differentiating nested groups",
+    },
+    {
+      code: `<fieldset>
+  <legend>Published status</legend>
+
+  <input id="draft" class="peer/draft" type="radio" name="status" checked />
+  <label for="draft" class="peer-checked/draft:text-sky-500">Draft</label>
+
+  <input id="published" class="peer/published" type="radio" name="status" />
+  <label for="published" class="peer-checked/published:text-sky-500">Published</label>
+
+  <div class="hidden peer-checked/draft:block">Drafts are only visible to administrators.</div>
+  <div class="hidden peer-checked/published:block">Your post will be publicly visible on your site.</div>
+</fieldset>`,
+      name: "differentiating peers",
+    },
+    {
+      code: `<div class="group-[:nth-of-type(3)_&]:block" />`,
+      name: "arbitrary groups",
+    },
+    {
+      code: `<div class="peer-[.is-dirty]:peer-required:block hidden" />`,
+      name: "stacked: arbitrary variant with arbitrary values + arbitrary variant with default value",
+    },
+    {
+      code: `<div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6" />`,
+      name: "responsive variants",
+    },
+    {
+      code: `<div className="flex supports-[display:grid]:grid" />`,
+      name: "supports",
+    },
+    {
+      code: `<div className="flex [@supports(display:grid)]:grid" />`,
+      name: "at-rules",
+    },
+    {
+      code: `<div className="[@media(any-hover:hover){&:hover}]:opacity-100" />`,
+      name: "complex at-rules",
+    },
   ],
   invalid: [
     {
@@ -65,6 +147,51 @@ ruleTester.run("no-invalid-classes", noInvalidClasses, {
     },
     {
       code: `<figure class="-bg-red-400" />`,
+      errors: [
+        {
+          messageId: "no-invalid-classes",
+        },
+      ],
+    },
+    {
+      code: `<figure class="mdd:flex bg-slate-50 text-red-500 rounded-xl p-8 md:p-0 dark:bg-slate-800" />`,
+      name: "invalid responsive variant",
+      errors: [
+        {
+          messageId: "no-invalid-classes",
+        },
+      ],
+    },
+    {
+      code: `<figure class="laptop:flex" />`,
+      name: "inexistent variant",
+      errors: [
+        {
+          messageId: "no-invalid-classes",
+        },
+      ],
+    },
+    {
+      code: `<figure class="dark:mdd:hover:bg-fuchsia-600" />`,
+      name: "invalid stacked variants",
+      errors: [
+        {
+          messageId: "no-invalid-classes",
+        },
+      ],
+    },
+    {
+      code: `<div class="text-slate-900 group-random:text-white text-sm font-semibold" />`,
+      name: "arbitrary variant with invalid predefined values eg group-* as in group-random",
+      errors: [
+        {
+          messageId: "no-invalid-classes",
+        },
+      ],
+    },
+    {
+      code: `<div class="group-group-[:nth-of-type(3)_&]:block" />`,
+      name: "invalid arbitrary groups with arbitrary values",
       errors: [
         {
           messageId: "no-invalid-classes",

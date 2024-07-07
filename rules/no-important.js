@@ -31,8 +31,8 @@ module.exports = {
 
         withTailwind("./tailwind.config.js", ({ config }) => {
           const inputClasses = parseClasses(node.value.value, config, {
-            withArbitraryValues: true,
-            withImportant: true,
+            skipModifiers: true,
+            skipVariants: true,
           });
 
           const hasImportant = inputClasses.filter((c) => c.startsWith("!"));

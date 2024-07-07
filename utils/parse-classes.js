@@ -17,10 +17,10 @@ function parseClasses(
    */
   config,
   options = {
-    withImportant: false,
-    withVariants: false,
-    withArbitraryValues: false,
-    withModifiers: false,
+    skipImportant: false,
+    skipVariants: false,
+    skipArbitraryValues: false,
+    skipModifiers: false,
   }
 ) {
   let result = value.split(classSeparator).filter((c) => c.trim() !== "");
@@ -28,7 +28,7 @@ function parseClasses(
     `(?!\\[.*?\\])${config.separator}(?![^\\[]*?\\])`
   );
 
-  if (!options.withImportant) {
+  if (options.skipImportant) {
     // Remove the important modifier eg "!flex" => "flex".
     result = result.map((c) => {
       if (!c.includes(config.separator))
@@ -41,17 +41,17 @@ function parseClasses(
     });
   }
 
-  if (!options.withArbitraryValues) {
+  if (options.skipArbitraryValues) {
     // Remove arbitrary values eg "[background:red]".
     result = result.filter((c) => !(c.startsWith("[") && c.endsWith("]")));
   }
 
-  if (!options.withModifiers) {
+  if (options.skipModifiers) {
     // Remove all modifiers eg "bg-white/80" where "80" is the modifier.
     result = result.map((c) => (c.includes("/") ? c.split("/")[0] : c));
   }
 
-  if (!options.withVariants) {
+  if (options.skipVariants) {
     // Remove all variants eg "dark:md:flex".
     result = result.map((c) => {
       if (!c.includes(config.separator)) return c;

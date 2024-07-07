@@ -3,7 +3,7 @@
 const attributes = ["className", "class"];
 const { parseClasses } = require("../utils/parse-classes");
 const { withTailwind } = require("../utils/with-tailwind");
-// const { generateRules } = require("tailwindcss/lib/lib/generateRules");
+const { generateRules } = require("tailwindcss/lib/lib/generateRules");
 
 const name = "no-invalid-classes";
 
@@ -20,31 +20,39 @@ module.exports = {
       JSXAttribute(node) {
         if (!attributes.includes(node.name.name)) return;
 
-        return withTailwind(
-          "./tailwind.config.js",
-          ({ classNames, config, twContext }) => {
-            const classes = parseClasses(node.value.value, config, {
-              withModifiers: true,
-            });
+        return withTailwind("./tailwind.config.js", ({ config, twContext }) => {
+          const classes = parseClasses(node.value.value, config);
 
-            // console.log(generateRules(new Set(classes), twContext));
-            // console.log(generateRules(new Set(["bg-rrrr-500"]), twContext));
+          const invalidClasses = classes.filter((c) => {
+            if (generateRules([c], twContext).length) return false;
 
-            const invalidClasses = classes.filter(
-              (c) => !classNames.some((validClass) => c === validClass)
-            );
+            let strippedClass = c;
+            if (c.startsWith("!")) {
+              strippedClass = c.slice(1);
+            }
 
-            if (!invalidClasses.length) return;
+            // Allow group/item, group/edit, peer/example, etc.
+            // https://tailwindcss.com/docs/hover-focus-and-other-states#differentiating-nested-groups
+            // https://tailwindcss.com/docs/hover-focus-and-other-states#differentiating-peers
+            // "peer-checked/draft:text-sky-500" works with `generateRules`, but "peer-checked/draft" doesn't.
+            if (
+              strippedClass.match(new RegExp(/\b(group|peer)\/[a-zA-Z0-9]+\b/))
+            )
+              return false;
 
-            context.report({
-              node,
-              messageId: name,
-              data: {
-                value: invalidClasses.join(", "),
-              },
-            });
-          }
-        );
+            return true;
+          });
+
+          if (!invalidClasses.length) return;
+
+          context.report({
+            node,
+            messageId: name,
+            data: {
+              value: invalidClasses.join(", "),
+            },
+          });
+        });
       },
     };
   },
