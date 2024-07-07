@@ -2,8 +2,33 @@ const setupContext = require("tailwindcss/lib/lib/setupContextUtils");
 const { getTailwindConfig } = require("./get-tailwind-config");
 
 /**
+ * @typedef {Object} Variant
+ * @property {string} name - The name of the variant.
+ * @property {boolean} isArbitrary - If the variant must take a value eg has-[...] or group where group can be paired with hover in group-hover.
+ * @property {string[]} values
+ * @property {boolean} hasDash
+ * @property {Function} selectors
+ */
+
+/**
+ * @typedef {Object} CallbackPayload
+ * @property {Variant[]} variants - The list of variants.
+ * @property {string[]} classNames - The list of class names.
+ * @property {object} config - The tailwind config.
+ * @property {object} twContext - The tailwind context.
+ */
+
+/**
+ * @callback Callback
+ * @param {CallbackPayload} payload
+ *
+ * @returns {void}
+ */
+
+/**
  * @param {string} tailwindConfigPath The path to the tailwind config.
- * @param {function} callback A function that receives the tailwind payload.
+ * @param {Callback} callback A function that receives the tailwind payload.
+ *
  * @returns A wrapper that provides tailwind config and classNames.
  */
 function withTailwind(tailwindConfigPath, callback) {
@@ -12,7 +37,10 @@ function withTailwind(tailwindConfigPath, callback) {
   context.tailwindConfig.separator = config.separator;
 
   const classNames = context
-    .getClassList({ includeMetadata: true })
+    .getClassList({
+      // Generate utilities with modifiers.
+      includeMetadata: true,
+    })
     .filter((className) => className !== "*")
     .map((className) => {
       if (typeof className === "string") return className;
@@ -26,10 +54,12 @@ function withTailwind(tailwindConfigPath, callback) {
     })
     .flat();
 
-  const variants = [];
-  context.variantMap.forEach((_, key) => variants.push(key));
+  /**
+   * @type {Variant[]}
+   */
+  const variants = context.getVariants();
 
-  return callback({ classNames, config, variants });
+  return callback({ classNames, config, variants, twContext: context });
 }
 
 module.exports = {

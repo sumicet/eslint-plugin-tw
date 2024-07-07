@@ -23,7 +23,23 @@ module.exports = {
           const inputVariants = parseVariants(node.value.value, config);
 
           const invalidVariants = inputVariants.filter(
-            (c) => !variants.includes(c)
+            (v) =>
+              !variants.some((variant) => {
+                if (variant.isArbitrary) {
+                  if (variant.values.length) {
+                    return variant.values.some(
+                      (value) => `${variant.name}-${value}` === v
+                    );
+                  }
+                  const withoutVariant = v.slice(variant.name.length);
+                  return (
+                    v.startsWith(variant.name) &&
+                    withoutVariant.startsWith("-[") &&
+                    !withoutVariant.endsWith("]")
+                  );
+                }
+                return variant.name === v;
+              })
           );
 
           if (!invalidVariants.length) return;

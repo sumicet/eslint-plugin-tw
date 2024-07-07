@@ -3,6 +3,7 @@
 const attributes = ["className", "class"];
 const { parseClasses } = require("../utils/parse-classes");
 const { withTailwind } = require("../utils/with-tailwind");
+// const { generateRules } = require("tailwindcss/lib/lib/generateRules");
 
 const name = "no-invalid-classes";
 
@@ -21,10 +22,13 @@ module.exports = {
 
         return withTailwind(
           "./tailwind.config.js",
-          ({ classNames, config }) => {
+          ({ classNames, config, twContext }) => {
             const classes = parseClasses(node.value.value, config, {
               withModifiers: true,
             });
+
+            // console.log(generateRules(new Set(classes), twContext));
+            // console.log(generateRules(new Set(["bg-rrrr-500"]), twContext));
 
             const invalidClasses = classes.filter(
               (c) => !classNames.some((validClass) => c === validClass)

@@ -41,5 +41,13 @@ ruleTester.run("no-important", noImportant, {
         },
       ],
     },
+    {
+      code: `<div className="!-my-px" />`,
+      errors: [
+        {
+          messageId: "no-important",
+        },
+      ],
+    },
   ],
 });

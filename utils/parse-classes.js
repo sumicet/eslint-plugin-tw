@@ -2,6 +2,8 @@ const classSeparator = /([\t\n\f\r ]+)/;
 
 /**
  * @returns A list of valid tailwind classes according to the tailwind config.
+ *
+ * Negative values are returned as they are eg "-mx-px".
  */
 function parseClasses(
   /**
@@ -41,7 +43,7 @@ function parseClasses(
 
   if (!options.withArbitraryValues) {
     // Remove arbitrary values eg "[background:red]".
-    result = result.filter((c) => !c.startsWith("[") && !c.endsWith("]"));
+    result = result.filter((c) => !(c.startsWith("[") && c.endsWith("]")));
   }
 
   if (!options.withModifiers) {
