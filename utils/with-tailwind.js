@@ -34,7 +34,7 @@ const { getTailwindConfig } = require("./get-tailwind-config");
 function withTailwind(tailwindConfigPath, callback) {
   const config = getTailwindConfig(tailwindConfigPath);
   let context = setupContext.createContext(config);
-  context.tailwindConfig.separator = config.separator;
+  context.tailwindConfig.separator = config.separator || ":";
 
   const classNames = context
     .getClassList({

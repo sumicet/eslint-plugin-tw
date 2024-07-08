@@ -21,8 +21,16 @@ const ruleTester = new RuleTester({
 ruleTester.run("no-invalid-classes", noInvalidClasses, {
   valid: [
     {
+      code: `<div />`,
+      name: "no mention of class",
+    },
+    {
       code: `<div className="bg-[#FFFFFF]" />`,
       name: "class with arbitrary value",
+    },
+    {
+      code: `<div className="grid-cols-[auto_minmax(0,1fr)]" />`,
+      name: "class with arbitrary value and _",
     },
     {
       code: `<div className="before:block before:absolute before:-inset-1 before:-skew-y-3 before:bg-pink-500 relative inline-block" />`,
@@ -30,14 +38,12 @@ ruleTester.run("no-invalid-classes", noInvalidClasses, {
     },
     {
       code: `<figure class="md:flex -my-px bg-slate-100 rounded-xl p-8 md:p-0 dark:bg-slate-800" />`,
+      name: "class with negative value",
     },
     {
       code: `<figure class="bg-custom/50 text-custom rounded-xl p-8 md:p-0" />`,
+      name: "class with modifier",
     },
-    {
-      code: `<div class="-mx-px" />`,
-    },
-
     {
       code: `<figure class="bg-sky-500 hover:bg-sky-700" />`,
       name: "simple variant",
@@ -123,6 +129,7 @@ ruleTester.run("no-invalid-classes", noInvalidClasses, {
   invalid: [
     {
       code: `<figure class="md:flexx [background:#FFFFFF] bg-slate-100/40 rounded-xl p-8 md:p-0 dark:bg-slate-800" />`,
+      name: "class with invalid name",
       errors: [
         {
           messageId: "no-invalid-classes",
@@ -131,6 +138,7 @@ ruleTester.run("no-invalid-classes", noInvalidClasses, {
     },
     {
       code: `<figure class="bg-not-existing-class/50 text-custom rounded-xl p-8 md:p-0" />`,
+      name: "class with invalid arbitrary value",
       errors: [
         {
           messageId: "no-invalid-classes",
@@ -139,6 +147,7 @@ ruleTester.run("no-invalid-classes", noInvalidClasses, {
     },
     {
       code: `<figure class="text-custom/56" />`,
+      name: "class with invalid modifier",
       errors: [
         {
           messageId: "no-invalid-classes",
@@ -147,6 +156,7 @@ ruleTester.run("no-invalid-classes", noInvalidClasses, {
     },
     {
       code: `<figure class="-bg-red-400" />`,
+      name: "class that doesn't accept negative modifier",
       errors: [
         {
           messageId: "no-invalid-classes",
@@ -192,6 +202,51 @@ ruleTester.run("no-invalid-classes", noInvalidClasses, {
     {
       code: `<div class="group-group-[:nth-of-type(3)_&]:block" />`,
       name: "invalid arbitrary groups with arbitrary values",
+      errors: [
+        {
+          messageId: "no-invalid-classes",
+        },
+      ],
+    },
+    {
+      code: `<div class="!md:bg-red-400" />`,
+      name: "misplaced important modifier",
+      errors: [
+        {
+          messageId: "no-invalid-classes",
+        },
+      ],
+    },
+    {
+      code: `<div className="group-hover//edit:text-gray-700" />`,
+      name: "invalid syntax: //",
+      errors: [
+        {
+          messageId: "no-invalid-classes",
+        },
+      ],
+    },
+    {
+      code: `<div className="md::flex" />`,
+      name: "invalid syntax: ::",
+      errors: [
+        {
+          messageId: "no-invalid-classes",
+        },
+      ],
+    },
+    {
+      code: `<div className="[&:nth-child(3)]::underline" />`,
+      name: "invalid syntax: [...]::",
+      errors: [
+        {
+          messageId: "no-invalid-classes",
+        },
+      ],
+    },
+    {
+      code: `<div className="[&:nth-child(3)]: underline flex bg-red-500" />`,
+      name: "invalid syntax: [...]: without class name",
       errors: [
         {
           messageId: "no-invalid-classes",

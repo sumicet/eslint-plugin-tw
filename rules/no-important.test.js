@@ -23,16 +23,12 @@ ruleTester.run("no-important", noImportant, {
     {
       code: `<figure class="md:flex bg-slate-100 rounded-xl p-8 md:p-0 dark:bg-slate-800" />`,
     },
+    {
+      code: `<div />`,
+      name: "no mention of class",
+    },
   ],
   invalid: [
-    // {
-    //   code: `<figure class="!md:flex bg-slate-100 rounded-xl p-8 md:p-0 dark:bg-slate-800" />`,
-    //   errors: [
-    //     {
-    //       messageId: "no-important",
-    //     },
-    //   ],
-    // },
     {
       code: `<figure class="![background:#FFFFFF] bg-slate-100/50 rounded-xl p-8 md:p-0 dark:bg-slate-800" />`,
       errors: [
@@ -43,6 +39,14 @@ ruleTester.run("no-important", noImportant, {
     },
     {
       code: `<div className="!-my-px" />`,
+      errors: [
+        {
+          messageId: "no-important",
+        },
+      ],
+    },
+    {
+      code: `<div class="!group/item" />`,
       errors: [
         {
           messageId: "no-important",

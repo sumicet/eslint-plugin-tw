@@ -37,7 +37,7 @@ function parseClasses(
       // `length - 1` to allow multiple modifiers eg "dark:md:flex".
       return words[words.length - 1].startsWith("!")
         ? c.replace(words[words.length - 1], words[words.length - 1].slice(1))
-        : words[words.length - 1];
+        : c;
     });
   }
 

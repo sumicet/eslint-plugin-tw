@@ -35,7 +35,6 @@ function requireUncached(module) {
 /**
  * Load the config from a path string or parsed from an object
  * @param {string|Object} config
- * @returns `null` when unchanged, `{}` when not found
  */
 function loadConfig(config) {
   let loadedConfig = null;
@@ -102,6 +101,7 @@ function resolve(twConfig) {
 
 /**
  * @see https://github.com/tailwindlabs/tailwindcss/blob/master/src/lib/setupTrackingContext.js
+ * @returns {import('tailwindcss').Config} The tailwind config object.
  */
 function getTailwindConfig(configOrPath) {
   return resolve(configOrPath);
